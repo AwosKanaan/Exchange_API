@@ -6,12 +6,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 @Data
-public class ExchangeRequest {
+public class Post {
 
 	@Id
 	private final String id;
-	private final String exchangeId;
+	private final String postId;
 	private final String userId;
-	private final String receiverId;
-	private final String requestedBookId;
+	private final String BookId;
 }
