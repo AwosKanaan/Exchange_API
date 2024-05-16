@@ -1,10 +1,13 @@
 package com.zuj.exchangeAPI.service;
 
 import com.zuj.exchangeAPI.dao.UserDAO;
+import com.zuj.exchangeAPI.dto.UserDTO;
 import com.zuj.exchangeAPI.model.User;
+import com.zuj.exchangeAPI.utils.Utils;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,19 +15,36 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
 	private final UserDAO userDAO;
+	private final BookService bookService;
+	private final SequenceGeneratorService sequenceGenerator;
 
-	public UserServiceImpl(UserDAO userDAO) {
+	public UserServiceImpl(
+			final UserDAO userDAO,
+			final BookService bookService,
+			final SequenceGeneratorService sequenceGenerator
+	) {
 		this.userDAO = userDAO;
+		this.bookService = bookService;
+		this.sequenceGenerator = sequenceGenerator;
 	}
 
 	@Override
-	public User createUser(User user) {
+	public User createUser(UserDTO userDTO) throws Exception {
+		if (userDAO.findByEmail(userDTO.email()).isPresent()) {
+			throw new Exception("email: " + userDTO.email() + " already exists");
+		}
+		if (userDAO.findByPhoneNumber(userDTO.phoneNumber()).isPresent()) {
+			throw new Exception("phone number: " + userDTO.phoneNumber() + " already exists");
+		}
+		User user = Utils.convertDtoToModel(userDTO, User.class);
+		assert user != null;
+		user.setUserId(String.valueOf(sequenceGenerator.generateSequence(User.SEQUENCE_NAME, "userId")));
 		return userDAO.save(user);
 	}
 
 	@Override
-	public Optional<User> getUserById(String userId) throws Exception {
-		Optional<User> user = userDAO.findById(userId);
+	public Optional<User> getUserByUserId(String userId) throws Exception {
+		Optional<User> user = userDAO.findByUserId(userId);
 		if (user.isPresent()) {
 			return user;
 		} else {
@@ -33,8 +53,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public List<User> getAllUsers() {
+		return userDAO.findAll();
+	}
+
+	@Override
 	public User patchUser(String userId, Map<String, Object> updates) {
-		return userDAO.findById(userId)
+		return userDAO.findByUserId(userId)
 				.map(user -> {
 					updates.forEach((key, value) -> {
 						Field field = null;
@@ -53,7 +78,21 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deleteUser(String userId) {
-		userDAO.deleteById(userId);
+	public User updateUser(User user) throws Exception {
+		Optional<User> optionalUser = userDAO.findByUserId(user.getUserId());
+		if (optionalUser.isEmpty()) {
+			throw new Exception("User with id: " + user.getUserId() + " is not found");
+		}
+		return userDAO.save(user);
+	}
+
+	@Override
+	public void deleteUser(String userId) throws Exception {
+		Optional<User> user = userDAO.findByUserId(userId);
+		if (user.isPresent()) {
+			userDAO.deleteByUserId(userId);
+		} else {
+			throw new Exception("User with id: " + userId + " is not found");
+		}
 	}
 }
