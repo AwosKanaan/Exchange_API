@@ -9,6 +9,7 @@ import com.zuj.exchangeAPI.utils.Utils;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,6 +51,7 @@ public class BookServiceImpl implements BookService {
 		Book book = Utils.convertDtoToModel(bookDTO, Book.class);
 		assert book != null;
 		book.setBookId(String.valueOf(sequenceGenerator.generateSequence(Book.SEQUENCE_NAME, "bookId")));
+		book.setCreatedAt(LocalDateTime.now());
 		return bookDAO.save(book);
 	}
 
@@ -75,6 +77,7 @@ public class BookServiceImpl implements BookService {
 							throw new RuntimeException(field.getName() + " does not exist.", e);
 						}
 					});
+					book.setUpdatedAt(LocalDateTime.now());
 					return bookDAO.save(book);
 				})
 				.orElseThrow(() -> new RuntimeException("Book with id " + bookId + " is not found"));

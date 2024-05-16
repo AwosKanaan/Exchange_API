@@ -7,6 +7,7 @@ import com.zuj.exchangeAPI.utils.Utils;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,6 +40,7 @@ public class UserServiceImpl implements UserService {
 		User user = Utils.convertDtoToModel(userDTO, User.class);
 		assert user != null;
 		user.setUserId(String.valueOf(sequenceGenerator.generateSequence(User.SEQUENCE_NAME, "userId")));
+		user.setCreatedAt(LocalDateTime.now());
 		return userDAO.save(user);
 	}
 
@@ -72,6 +74,7 @@ public class UserServiceImpl implements UserService {
 							throw new RuntimeException(field.getName() + " does not exist.", e);
 						}
 					});
+					user.setUpdatedAt(LocalDateTime.now());
 					return userDAO.save(user);
 				})
 				.orElseThrow(() -> new RuntimeException("User not found with id " + userId));
