@@ -1,5 +1,6 @@
 package com.zuj.exchangeAPI.service;
 
+import com.zuj.exchangeAPI.dto.PostDTO;
 import com.zuj.exchangeAPI.model.Post;
 import org.springframework.http.ResponseEntity;
 
@@ -10,8 +11,9 @@ import java.util.Optional;
 public interface PostService {
 
 	List<Post> getAllPosts();
-	Optional<Post> getPostById(String postId) throws Exception;
-	Post createPost(Post post);
+	Optional<Post> getPostByPostId(String postId) throws Exception;
+	Post createPost(PostDTO postDTO) throws Exception;
 	Post patchPost(String postId, Map<String, Object> updates);
-	ResponseEntity<Map<String, Object>> deletePost(String postId);
+	void deletePost(String postId) throws Exception;
+	List<Post> getPostsForUser(String userId) throws Exception;
 }
