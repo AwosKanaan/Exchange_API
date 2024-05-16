@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 @Document
 @Data
 @AllArgsConstructor
@@ -21,4 +23,6 @@ public class Book {
 	private String title;
 	private String description;
 	private BookCondition condition;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 }

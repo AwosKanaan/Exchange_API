@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,10 +82,12 @@ public class PostServiceImpl implements PostService {
 		post.setUserId(postDTO.userId());
 		populateUserInPost(post);
 		populateBookInPost(post);
+		post.setCreatedAt(LocalDateTime.now());
 		post = postDAO.save(post);
 		User user = optionalUser.get();
 		List<Post> posts = getPostsForUser(user.getUserId());
 		user.setPosts(posts);
+		user.setUpdatedAt(LocalDateTime.now());
 		userService.updateUser(user);
 		return post;
 	}
@@ -115,6 +118,7 @@ public class PostServiceImpl implements PostService {
 							}
 						}
 					});
+					post.setUpdatedAt(LocalDateTime.now());
 					return postDAO.save(post);
 				})
 				.orElseThrow(() -> new RuntimeException("Post not found with id " + postId));
