@@ -8,6 +8,7 @@ import com.zuj.exchangeAPI.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,11 +52,11 @@ public class PostController {
 	}
 
 	@PostMapping("/save")
-	public ResponseEntity<Map<String, Object>> createPost(@RequestBody PostDTO newPost) {
+	public ResponseEntity<Map<String, Object>> createPost(@ModelAttribute PostDTO newPost, @RequestPart("images") MultipartFile image) {
 		Map<String, Object> result = new HashMap<>();
 		Post post;
 		try {
-			post = postService.createPost(newPost);
+			post = postService.createPost(newPost, image);
 			result.put("Post", post);
 			return ResponseEntity.status(HttpStatus.CREATED).body(result);
 		} catch (Exception e) {

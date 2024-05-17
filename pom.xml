@@ -36,6 +36,11 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.github.paulcwarren</groupId>
+			<artifactId>spring-content-rest</artifactId>
+			<version>0.0.10</version>
+		</dependency>
 	</dependencies>
 
 	<build>
