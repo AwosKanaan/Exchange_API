@@ -72,15 +72,19 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public Post createPost(PostDTO postDTO, MultipartFile image) throws Exception {
+	public Post createPost(PostDTO postDTO) throws Exception {
 		Optional<User> optionalUser = userService.getUserByUserId(postDTO.userId());
 		if (optionalUser.isEmpty()) {
 			throw new Exception("cannot create post for non existing user consider creating one!");
 		}
-		Book book = bookService.createBook(postDTO.book(), image);
+		Optional<Book> book = bookService.getBookByBookId(postDTO.bookId());
+		if (book.isEmpty()) {
+			throw new Exception("Book with id: " + postDTO.bookId() + " is not found");
+		}
+//		Book book = bookService.createBook(postDTO.book(), image);
 		Post post = new Post();
 		post.setPostId(String.valueOf(sequenceGenerator.generateSequence(Post.SEQUENCE_NAME, "postId")));
-		post.setBookId(book.getBookId());
+		post.setBookId(book.get().getBookId());
 		post.setUserId(postDTO.userId());
 		populateUserInPost(post);
 		populateBookInPost(post);

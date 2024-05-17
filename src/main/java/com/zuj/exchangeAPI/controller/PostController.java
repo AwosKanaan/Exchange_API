@@ -52,11 +52,11 @@ public class PostController {
 	}
 
 	@PostMapping("/save")
-	public ResponseEntity<Map<String, Object>> createPost(@ModelAttribute PostDTO newPost, @RequestPart("images") MultipartFile image) {
+	public ResponseEntity<Map<String, Object>> createPost(@RequestBody PostDTO newPost) {
 		Map<String, Object> result = new HashMap<>();
 		Post post;
 		try {
-			post = postService.createPost(newPost, image);
+			post = postService.createPost(newPost);
 			result.put("Post", post);
 			return ResponseEntity.status(HttpStatus.CREATED).body(result);
 		} catch (Exception e) {

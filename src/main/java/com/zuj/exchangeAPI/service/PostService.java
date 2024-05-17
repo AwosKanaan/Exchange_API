@@ -13,7 +13,7 @@ public interface PostService {
 
 	List<Post> getAllPosts();
 	Optional<Post> getPostByPostId(String postId) throws Exception;
-	Post createPost(PostDTO postDTO, MultipartFile image) throws Exception;
+	Post createPost(PostDTO postDTO) throws Exception;
 	Post patchPost(String postId, Map<String, Object> updates);
 	void deletePost(String postId) throws Exception;
 	List<Post> getPostsForUser(String userId) throws Exception;

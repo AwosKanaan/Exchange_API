@@ -72,7 +72,6 @@ public class BookController {
 		}
 	}
 
-
 	@PutMapping("/patch/{bookId}")
 	public ResponseEntity<Map<String, Object>> updateBook(@PathVariable String bookId, @RequestBody String updatedBook) {
 		Book book;
