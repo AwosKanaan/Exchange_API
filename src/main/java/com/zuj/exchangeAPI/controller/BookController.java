@@ -4,11 +4,18 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zuj.exchangeAPI.dto.BookDTO;
 import com.zuj.exchangeAPI.model.Book;
+import com.zuj.exchangeAPI.model.Image;
 import com.zuj.exchangeAPI.service.BookService;
+import org.bson.types.Binary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,11 +58,12 @@ public class BookController {
 	}
 
 	@PostMapping("/save")
-	public ResponseEntity<Map<String, Object>> createBook(@RequestBody BookDTO newBook) {
+	public ResponseEntity<Map<String, Object>> createBook(@ModelAttribute BookDTO newBook,
+	                                                      @RequestParam("images") MultipartFile image) {
 		Map<String, Object> result = new HashMap<>();
 		Book book;
 		try {
-			book = bookService.createBook(newBook);
+			book = bookService.createBook(newBook, image);
 			result.put("Book", book);
 			return ResponseEntity.status(HttpStatus.CREATED).body(result);
 		} catch (Exception e) {

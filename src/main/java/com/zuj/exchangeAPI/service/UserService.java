@@ -1,8 +1,6 @@
 package com.zuj.exchangeAPI.service;
 
-import com.zuj.exchangeAPI.dto.PostDTO;
 import com.zuj.exchangeAPI.dto.UserDTO;
-import com.zuj.exchangeAPI.model.Post;
 import com.zuj.exchangeAPI.model.User;
 
 import java.util.List;

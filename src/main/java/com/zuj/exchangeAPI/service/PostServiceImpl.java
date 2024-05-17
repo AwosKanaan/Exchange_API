@@ -7,10 +7,12 @@ import com.zuj.exchangeAPI.dto.BookDTO;
 import com.zuj.exchangeAPI.dto.PostDTO;
 import com.zuj.exchangeAPI.dto.UserDTO;
 import com.zuj.exchangeAPI.model.Book;
+import com.zuj.exchangeAPI.model.Image;
 import com.zuj.exchangeAPI.model.Post;
 import com.zuj.exchangeAPI.model.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -75,10 +77,14 @@ public class PostServiceImpl implements PostService {
 		if (optionalUser.isEmpty()) {
 			throw new Exception("cannot create post for non existing user consider creating one!");
 		}
-		Book book = bookService.createBook(postDTO.book());
+		Optional<Book> book = bookService.getBookByBookId(postDTO.bookId());
+		if (book.isEmpty()) {
+			throw new Exception("Book with id: " + postDTO.bookId() + " is not found");
+		}
+//		Book book = bookService.createBook(postDTO.book(), image);
 		Post post = new Post();
 		post.setPostId(String.valueOf(sequenceGenerator.generateSequence(Post.SEQUENCE_NAME, "postId")));
-		post.setBookId(book.getBookId());
+		post.setBookId(book.get().getBookId());
 		post.setUserId(postDTO.userId());
 		populateUserInPost(post);
 		populateBookInPost(post);

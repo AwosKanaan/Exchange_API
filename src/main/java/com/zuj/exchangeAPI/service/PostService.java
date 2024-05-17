@@ -3,6 +3,7 @@ package com.zuj.exchangeAPI.service;
 import com.zuj.exchangeAPI.dto.PostDTO;
 import com.zuj.exchangeAPI.model.Post;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
