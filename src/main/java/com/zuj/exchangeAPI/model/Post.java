@@ -28,4 +28,5 @@ public class Post {
 	private User user;
 	@Transient
 	private Book book;
+	private boolean isDone;
 }

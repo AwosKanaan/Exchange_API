@@ -81,7 +81,6 @@ public class PostServiceImpl implements PostService {
 		if (book.isEmpty()) {
 			throw new Exception("Book with id: " + postDTO.bookId() + " is not found");
 		}
-//		Book book = bookService.createBook(postDTO.book(), image);
 		Post post = new Post();
 		post.setPostId(String.valueOf(sequenceGenerator.generateSequence(Post.SEQUENCE_NAME, "postId")));
 		post.setBookId(book.get().getBookId());
@@ -96,6 +95,15 @@ public class PostServiceImpl implements PostService {
 		user.setUpdatedAt(LocalDateTime.now());
 		userService.updateUser(user);
 		return post;
+	}
+
+	@Override
+	public Post updatePost(Post post) throws Exception {
+		Optional<Post> optionalPost = postDAO.findByPostId(post.getPostId());
+		if (optionalPost.isEmpty()) {
+			throw new Exception("post with id: " + post.getPostId() + " is not found");
+		}
+		return postDAO.save(post);
 	}
 
 	@Override

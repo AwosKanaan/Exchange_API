@@ -1,8 +1,7 @@
 package com.zuj.exchangeAPI.model;
 
-public enum RequestStatus {
+public enum PostStatus {
 	NEWELY_ADDED,
 	ACCEPTED,
-	PENDING,
 	REJECTED
 }
