@@ -46,10 +46,10 @@ public class BookRequestController {
 		bookRequestService.deleteBookRequest(bookRequestId);
 	}
 
-	@PostMapping("/complete-by-requester/{requesterId}")
-	public void completeRequestByRequester(@PathVariable String requesterId) throws Exception {
-		bookRequestService.completeRequestByRequester(requesterId);
-	}
+//	@PostMapping("/complete-by-requester/{requesterId}")
+//	public void completeRequestByRequester(@PathVariable String requesterId) throws Exception {
+//		bookRequestService.completeRequestByRequester(requesterId);
+//	}
 
 	@PostMapping("/complete-by-requested-from/{requestedFromId}")
 	public void completeRequestByRequestedFrom(@PathVariable String requestedFromId) throws Exception {

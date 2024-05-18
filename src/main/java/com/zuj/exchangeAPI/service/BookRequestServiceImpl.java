@@ -1,6 +1,7 @@
 package com.zuj.exchangeAPI.service;
 
 import com.zuj.exchangeAPI.dao.BookRequestDAO;
+import com.zuj.exchangeAPI.dao.CustomBookRequestDAO;
 import com.zuj.exchangeAPI.model.Book;
 import com.zuj.exchangeAPI.model.BookRequest;
 import com.zuj.exchangeAPI.model.Post;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class BookRequestServiceImpl implements BookRequestService {
 
 	private final BookRequestDAO bookRequestDAO;
+	private final CustomBookRequestDAO customBookRequestDAO;
 	private final PostService postService;
 	private final UserService userService;
 	private final BookService bookService;
@@ -25,51 +27,39 @@ public class BookRequestServiceImpl implements BookRequestService {
 
 	public BookRequestServiceImpl(
 			final BookRequestDAO bookRequestDAO,
+			final CustomBookRequestDAO customBookRequestDAO,
 			final PostService postService,
 			final UserService userService,
 			final BookService bookService,
 			final SequenceGeneratorService sequenceGenerator
 	) {
 		this.bookRequestDAO = bookRequestDAO;
+		this.customBookRequestDAO = customBookRequestDAO;
 		this.postService = postService;
 		this.userService = userService;
 		this.bookService = bookService;
 		this.sequenceGenerator = sequenceGenerator;
 	}
 
-	public BookRequest save(BookRequest bookRequest) throws Exception {
-		Optional<User> requester = userService.getUserByUserId(bookRequest.getRequesterId());
-		Optional<User> requestedFrom = userService.getUserByUserId(bookRequest.getRequestedFromId());
-		if (requester.isEmpty() || requestedFrom.isEmpty()) {
-			throw new Exception("Requester or requested from user does not exist");
-		}
+	/***
+	 * This method should be added when the project is extended and
+	 * more security is needed
+	 * @param requestedFromId
+	 * @throws Exception
+	 */
+//	@Transactional
+//	public void completeRequestByRequester(String requesterId) throws Exception {
+//		BookRequest bookRequest = bookRequestDAO.findBookRequestByRequesterId(requesterId)
+//				.orElseThrow(() -> new RuntimeException("Request not found"));
+//		bookRequest.setRequesterComplete(true);
+//		checkAndMarkPostAsDone(bookRequest);
+//		bookRequest.setUpdatedAt(LocalDateTime.now());
+//		bookRequestDAO.save(bookRequest);
+//	}
 
-		Optional<Post> post = postService.getPostByPostId(bookRequest.getPost().getPostId());
-		if (post.isEmpty()) {
-			throw new Exception("post does not exist");
-		}
-
-		Optional<Book> book = bookService.getBookByBookId(bookRequest.getPost().getBookId());
-		if (book.isEmpty()) {
-			throw new Exception("book does not exist");
-		}
-		bookRequest.setCreatedAt(LocalDateTime.now());
-		return bookRequestDAO.save(bookRequest);
-	}
-
-	@Transactional
-	public void completeRequestByRequester(String requesterId) throws Exception {
-		BookRequest bookRequest = bookRequestDAO.findBookRequestByRequesterId(requesterId)
-				.orElseThrow(() -> new RuntimeException("Request not found"));
-		bookRequest.setRequesterComplete(true);
-		checkAndMarkPostAsDone(bookRequest);
-		bookRequest.setUpdatedAt(LocalDateTime.now());
-		bookRequestDAO.save(bookRequest);
-	}
-
-	@Transactional
+//	@Transactional
 	public void completeRequestByRequestedFrom(String requestedFromId) throws Exception {
-		BookRequest bookRequest = bookRequestDAO.findBookRequestByRequestedFromId(requestedFromId)
+		BookRequest bookRequest = customBookRequestDAO.findLatestByRequestedFromId(requestedFromId)
 				.orElseThrow(() -> new RuntimeException("Request not found"));
 		bookRequest.setRequestedFromComplete(true);
 		checkAndMarkPostAsDone(bookRequest);
@@ -77,9 +67,9 @@ public class BookRequestServiceImpl implements BookRequestService {
 		bookRequestDAO.save(bookRequest);
 	}
 
-	@Transactional
+//	@Transactional
 	protected void checkAndMarkPostAsDone(BookRequest bookRequest) throws Exception {
-		if (bookRequest.isRequesterComplete() && bookRequest.isRequestedFromComplete()) {
+		if (bookRequest.isRequestedFromComplete()) {
 			Post post = bookRequest.getPost();
 			post.setDone(true);
 			postService.updatePost(post);
@@ -93,12 +83,7 @@ public class BookRequestServiceImpl implements BookRequestService {
 
 	@Override
 	public List<BookRequest> getAllBookRequests() {
-		return null;
-	}
-
-	@Override
-	public Optional<BookRequest> getBookRequestByBookRequestId(String bookRequestId) throws Exception {
-		return Optional.empty();
+		return bookRequestDAO.findAll();
 	}
 
 	@Override
@@ -114,6 +99,7 @@ public class BookRequestServiceImpl implements BookRequestService {
 		}
 		bookRequest.setBookRequestId(String.valueOf(sequenceGenerator.generateSequence(BookRequest.SEQUENCE_NAME, "bookRequestId")));
 		bookRequest.setPost(post.get());
+		bookRequest.setCreatedAt(LocalDateTime.now());
 		return bookRequestDAO.save(bookRequest);
 	}
 

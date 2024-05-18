@@ -21,6 +21,7 @@ public class User {
 	public static final String SEQUENCE_NAME = "users_sequence";
 	private String userId;
 	private String userName;
+	private String password;
 	private String email;
 	private double rating;
 	private String phoneNumber;
